@@ -113,7 +113,8 @@ def incrementRegionCounter():
         reload(currentView)
     th = threading.Timer(10, incrementRegionCounter)
     th.start()
-    
+
+incrementRegionCounter()  
 
 def italy_button():
     global currentView
@@ -123,7 +124,6 @@ def italy_button():
 def reg_button():
     global currentView
     global lastRegione
-    incrementRegionCounter()
     lastRegione +=1
     if(lastRegione>=regione_int):
         lastRegione = 0
