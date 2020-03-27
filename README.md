@@ -7,3 +7,6 @@ Download the files in the repository and put 'covid-gui.py' and the 'img' folder
 
 # Run
 Using a terminal window, move into the directory where 'covid-gui.py' is located. In Linux is "cd /path/to/file". Then run the script using "python3 covid-gui.py". Don't run it outside of the folder, like with "python3 path/covid-gui.py" or it will not work.
+
+# Beta
+The "covid-gui-2.py" application is a beta version. I'm adding some feature, other are missing for now so it's in a separate file.
