@@ -58,10 +58,11 @@ def updateData(currentData):
     global text_tamponi
     global lastRegione
     global oldDataItDF
+    global oldDataBasDF
 
-    print("View corrente: " + str(currentData))
+    print("[INFO][updateData] View corrente: " + str(currentData))
     if(currentData == 0): #Caso Italia
-        print("Carico i dati Italia")
+        print("[INFO][updateData] Carico i dati Italia")
 
         Nattuali = data_nazione.loc[0]["totale_attualmente_positivi"]
         Nguariti = data_nazione.loc[0]["dimessi_guariti"]
@@ -71,10 +72,11 @@ def updateData(currentData):
 
         for i in range(oldDataItDF.shape[1]):
             if(oldDataItDF.loc[1][i] != nuovidati[i]):
-                print("Nuovi dati, sostituisco")
+                print("[INFO][updateData - csv updating] Nuovi dati, sostituisco")
                 oldDataItDF.loc[0][i] = oldDataItDF.loc[1][i]
                 oldDataItDF.loc[1][i] = nuovidati[i]
 
+        print("[INFO][updateData] overwrite file csv Italia")
         oldDataItDF.to_csv(NAZIONE_FILE, index = False, header=True) #salvo i nuovi dati
 
         text_data = str(data_nazione.loc[0]["data"])
@@ -95,7 +97,7 @@ def updateData(currentData):
 
 
     elif(currentData == 1): #Caso regioni
-        print("Carico i dati regione")
+        print("[INFO][updateData] Carico i dati regione")
 
         """
         Creare lista con i nuovi dati
@@ -113,29 +115,26 @@ def updateData(currentData):
         text_tamponi = str(data_regione.loc[lastRegione]["tamponi"])
 
     elif(currentData == 2): #Caso Basilicata
-        print("Carico i dati Basilicata")
-
-        """
-        - Creare lista con i nuovi dati
-        - Inserire i dati nel csv delle regioni
-        - Salvare il NAZIONE_file
-        - Aggiornare i text per contenere i nuovi dati
-        """
+        print("[INFO][updateData] Carico i dati Basilicata")
 
         for i in range(regione_int):
+            print("[DEBUG]" + data_regione.loc[i]["denominazione_regione"])
             if(data_regione.loc[i]["denominazione_regione"] == "Basilicata"):
-
+                print("[INFO][updateData - regions iterator] Trovata regione in csv:" + str(data_regione.loc[i]["denominazione_regione"]))
                 found=0
                 for j in range(province_int):
                     if(data_province.loc[j]["sigla_provincia"] == "MT"):
+                        print("[INFO][updateData - iterator province] Trovati dati Matera: " + str(data_province.loc[j]["totale_casi"]))
                         found+=1
                         Nattuali_mt = data_province.loc[j]["totale_casi"]
                         mt_case = str(Nattuali_mt)
                     elif(data_province.loc[j]["sigla_provincia"] == "PZ"):
+                        print("[INFO][updateData - iterator province] Trovati dati Potenza: " + str(data_province.loc[j]["totale_casi"]))
                         found+=1
                         Nattuali_pz = data_province.loc[j]["totale_casi"]
                         pz_case = str(Nattuali_pz)
                     if(found >= 2):
+                        print("[INFO][updateData - iterator province] Tutte le province trovate. Interrompo iterazione.")
                         break
 
                 Nattuali = data_regione.loc[i]["totale_attualmente_positivi"]
@@ -143,19 +142,22 @@ def updateData(currentData):
                 Ndeceduti = data_regione.loc[i]["deceduti"]
                 Ntamponi = data_regione.loc[i]["tamponi"]
                 nuovidatiBas = [Nattuali, Nattuali_pz, Nattuali_mt, Nguariti, Ndeceduti, Ntamponi]
+                print("[INFO][updateData - Basilicata] carico i nuovi dati - att:" + str(Nattuali) + ", guar: " + str(Nguariti) + ", dec: " + str(Ndeceduti) + "tam: " + str(Ntamponi))
 
-                for i in range(oldDataBasDF.shape[1]):
-                    if(oldDataBasDF.loc[1][i] != nuovidatiBas[i]):
-                        print("Nuovi dati, sostituisco")
-                        oldDataBasDF.loc[0][i] = oldDataBasDF.loc[1][i]
-                        oldDataBasDF.loc[1][i] = nuovidatiBas[i]
-
+                for j in range(oldDataBasDF.shape[1]):
+                    if(oldDataBasDF.loc[1][j] != nuovidatiBas[j]):
+                        print("[INFO][updateData - csv updating] Nuovi dati, sostituisco")
+                        oldDataBasDF.loc[0][j] = oldDataBasDF.loc[1][j]
+                        oldDataBasDF.loc[1][j] = nuovidatiBas[j]
+                print("[INFO][updateData] overwrite file csv Basilicata")
                 oldDataBasDF.to_csv(BASILICATA_FILE, index = False, header=True) #salvo i nuovi dati
 
                 text_data = str(data_regione.loc[i]["data"])
                 text_tot_positivi = str(data_regione.loc[i]["totale_attualmente_positivi"]) + " PZ(" + pz_case + "), MT(" + mt_case + ")"
-                #text_new_positivi = str(data_regione.loc[i]["nuovi_attualmente_positivi"])
+                print("[DEBUG] text_tot_positivi: " + text_tot_positivi)
 
+                #text_new_positivi = str(data_regione.loc[i]["nuovi_attualmente_positivi"])
+                print("data_regione.loc[i][totale_attualmente_positivi] :" + str(data_regione.loc[i]["totale_attualmente_positivi"]))
                 text_new_positivi = "%s PZ(%s), MT(%s)" % (str(data_regione.loc[i]["nuovi_attualmente_positivi"]),
                     (str(oldDataBasDF.loc[1]['attuali_pz'] - oldDataBasDF.loc[0]['attuali_pz'])
 
@@ -166,7 +168,7 @@ def updateData(currentData):
 
                     if (oldDataBasDF.loc[1]['attuali_mt'] - oldDataBasDF.loc[0]['attuali_mt'])<0
                     else "+" + str(oldDataBasDF.loc[1]['attuali_mt'] - oldDataBasDF.loc[0]['attuali_mt'])))
-
+                print("data_regione.loc[i][nuovi_attualmente_positivi]: " + str(data_regione.loc[i]["nuovi_attualmente_positivi"]))
                 #print("-------- DEBUG -------")
                 #print(oldDataBasDF.loc[1]['attuali_pz'] - oldDataBasDF.loc[0]['attuali_pz'])
                 #print(oldDataBasDF.loc[1]['attuali_mt'] - oldDataBasDF.loc[0]['attuali_mt'])
@@ -176,16 +178,20 @@ def updateData(currentData):
                     (str(oldDataBasDF.loc[1]['guariti'] - oldDataBasDF.loc[0]['guariti'])
                     if (oldDataBasDF.loc[1]['guariti'] - oldDataBasDF.loc[0]['guariti'])<0
                     else "+" + str(oldDataBasDF.loc[1]['guariti'] - oldDataBasDF.loc[0]['guariti'])))
+                print("data_regione.loc[i][dimessi_guariti]: " + str(data_regione.loc[i]["dimessi_guariti"]))
                 #text_deceduti = str(data_regione.loc[i]["deceduti"])
                 text_deceduti = "%s (%s)" % (str(data_regione.loc[i]['deceduti']),
                     (str(oldDataBasDF.loc[1]['deceduti'] - oldDataBasDF.loc[0]['deceduti'])
                     if (oldDataBasDF.loc[1]['deceduti'] - oldDataBasDF.loc[0]['deceduti'])<0
                     else "+" + str(oldDataBasDF.loc[1]['deceduti'] - oldDataBasDF.loc[0]['deceduti'])))
-                #text_tamponi = str(data_regione.loc[i]["tamponi"])
+                #print("data_regione.loc[i][deceduti]: "+str(data_regione.loc[i]['deceduti'])
+                text_tamponi = str(data_regione.loc[i]["tamponi"])
                 text_tamponi = "%s (%s)" % (str(data_regione.loc[i]['tamponi']),
                     (str(oldDataBasDF.loc[1]['tamponi'] - oldDataBasDF.loc[0]['tamponi'])
                     if (oldDataBasDF.loc[1]['tamponi'] - oldDataBasDF.loc[0]['tamponi'])<0
                     else "+" + str(oldDataBasDF.loc[1]['tamponi'] - oldDataBasDF.loc[0]['tamponi'])))
+                #print("data_regione.loc[i][tamponi]: " + str(data_regione.loc[i]['tamponi']))
+
 
                 break
 
@@ -273,23 +279,25 @@ text_tamponi = str(data_nazione.loc[0]["tamponi"])
 
 # --------------------------------------------------- File nazione
 if os.path.exists(NAZIONE_FILE) == False:
-    print("Il file Nazione non esiste. Lo creo")
+    print("[INFO][csv Italia] Il file Nazione non esiste. Lo creo")
 
     data = [[0, 0, 0, 0], [data_nazione.loc[0]["totale_attualmente_positivi"], data_nazione.loc[0]["dimessi_guariti"], data_nazione.loc[0]["deceduti"], data_nazione.loc[0]["tamponi"]]]
     oldDataItDF = pd.DataFrame(data, columns = ['attuali', 'guariti', 'deceduti', 'tamponi'])
     #print(oldDataItDF)
     oldDataItDF.to_csv(NAZIONE_FILE, index = False, header=True)
 else:
-    print("Il file Nazione esiste.")
+    print("[INFO][csv Italia] Il file Nazione esiste.")
     oldDataItDF = pd.read_csv(NAZIONE_FILE)
     #print(oldDataItDF)
 
 # ---------------------------------------------------- File regioni
 """
+#  - idea tutto su una riga per ogni regione: ['attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti' 'tamponi', 'past_tamponi']
+#  - e per ogni riga ci sarà una regione (0: Abruzzo, 1: Basilicata, 2: P A Bolzano, 3: Calabria, ...)
 if os.path.exists(REGIONE_FILE) == False:
     print("Il file Regione non esiste. Lo creo")
-    data = [[0, 0, 0, 0], [data_nazione.loc[0]["totale_attualmente_positivi"], data_nazione.loc[0]["dimessi_guariti"], data_nazione.loc[0]["deceduti"], data_nazione.loc[0]["tamponi"]]]
-    oldDataRegDF = pd.DataFrame(data, columns = ['attuali', 'guariti', 'deceduti', 'tamponi'])
+    data = [[0, 0, 0, 0, 0, 0, 0, 0], [data_nazione.loc[0]["totale_attualmente_positivi"], data_nazione.loc[0]["dimessi_guariti"], data_nazione.loc[0]["deceduti"], data_nazione.loc[0]["tamponi"]]]
+    oldDataRegDF = pd.DataFrame(data, columns = ['attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti' 'tamponi', 'past_tamponi'])
     #print(oldDataRegDF)
     oldDataRegDF.to_csv(REGIONE_FILE, index = False, header=True)
 else:
@@ -299,7 +307,7 @@ else:
 """
 # ----------------------------------------------------- File Basilicata
 if os.path.exists(BASILICATA_FILE) == False:
-    print("Il file Basilicata non esiste. Lo creo")
+    print("[INFO][csv Basilicata] Il file Basilicata non esiste. Lo creo")
 
     for i in range(regione_int):
         if(data_regione.loc[i]["denominazione_regione"] == "Basilicata"):
@@ -326,7 +334,7 @@ if os.path.exists(BASILICATA_FILE) == False:
     #print(oldDataBasDF)
     oldDataBasDF.to_csv(BASILICATA_FILE, index = False, header=True)
 else:
-    print("Il file Basilicata esiste.")
+    print("[INFO][csv Basilicata] Il file Basilicata esiste.")
     oldDataBasDF = pd.read_csv(BASILICATA_FILE)
     #print(oldDataBasDF)
 
