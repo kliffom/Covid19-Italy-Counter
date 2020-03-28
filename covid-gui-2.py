@@ -209,8 +209,6 @@ def incrementRegionCounter():
     th = threading.Timer(10, incrementRegionCounter)
     th.start()
 
-incrementRegionCounter()
-
 def italy_button():
     global currentView
     currentView = 0
@@ -291,20 +289,49 @@ else:
     #print(oldDataItDF)
 
 # ---------------------------------------------------- File regioni
-"""
+
 #  - idea tutto su una riga per ogni regione: ['attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti' 'tamponi', 'past_tamponi']
 #  - e per ogni riga ci sarà una regione (0: Abruzzo, 1: Basilicata, 2: P A Bolzano, 3: Calabria, ...)
 if os.path.exists(REGIONE_FILE) == False:
-    print("Il file Regione non esiste. Lo creo")
-    data = [[0, 0, 0, 0, 0, 0, 0, 0], [data_nazione.loc[0]["totale_attualmente_positivi"], data_nazione.loc[0]["dimessi_guariti"], data_nazione.loc[0]["deceduti"], data_nazione.loc[0]["tamponi"]]]
-    oldDataRegDF = pd.DataFrame(data, columns = ['attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti' 'tamponi', 'past_tamponi'])
+    print("[INFO][csv Regioni] Il file Regione non esiste. Lo creo")
+    #data = [[0, 0, 0, 0, 0, 0, 0, 0]]
+    oldDataRegDF = pd.DataFrame(columns = ['regione', 'attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti', 'tamponi', 'past_tamponi'])
+    print("[DEBUG] oldDataRegDF creation")
+    print(oldDataRegDF)
+    # Salvo i dati attuali nel file csv
+    #dataTest = [[1, 2, 3, 4, 5, 6, 7, 8, 9]]
+    #dataDF = pd.DataFrame(dataTest, columns = ['regione', 'attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti', 'tamponi', 'past_tamponi'])
+
+    #print("[DEBUG] dataDF creation")
+    #print(dataDF)
+    #oldDataRegDF = pd.concat([oldDataRegDF, dataDF], axis=0)
+    
+    for i in range(regione_int):
+        thisRegione = str(data_regione.loc[i]["denominazione_regione"])
+        thisAttuali = data_regione.loc[i]["totale_attualmente_positivi"]
+        thisGuariti = data_regione.loc[i]["dimessi_guariti"]
+        thisDeceduti = data_regione.loc[i]["deceduti"]
+        thisTamponi = data_regione.loc[i]["tamponi"]
+        print("[DEBUG] i: %d, reg: %s, att: %d, guar: %d, dec: %d, tamp: %d"
+            % (i, thisRegione, thisAttuali, thisGuariti, thisDeceduti, thisTamponi))
+        thisData = [[thisAttuali, 0, thisAttuali, 0, thisGuariti, 0, thisDeceduti, 0, thisTamponi]]
+        new_row = pd.DataFrame(thisData, columns = ['regione', 'attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti', 'tamponi', 'past_tamponi'])
+        oldDataRegDF = pd.concat([oldDataRegDF, new_row], axis=0)
+        #oldDataRegDF.loc[i] = [thisRegione, 0, thisAttuali, 0, thisGuariti, 0, thisDeceduti, 0, thisTamponi]
+        """
+        regionData = pd.Series([thisRegione, 0, thisAttuali, 0, thisGuariti, 0, thisDeceduti, 0, thisTamponi])
+        new_row = pd.DataFrame([regionData], columns = ['regione', 'attuali', 'past_attuali', 'guariti', 'past_guariti', 'deceduti', 'past_deceduti' 'tamponi', 'past_tamponi'])
+        oldDataRegDF = pd.concat([oldDataRegDF, new_row], ignore_index=True)
+        """
+
+    print(oldDataRegDF)
     #print(oldDataRegDF)
     oldDataRegDF.to_csv(REGIONE_FILE, index = False, header=True)
 else:
-    print("Il file Regione esiste.")
+    print("[INFO][csv Regioni] Il file Regione esiste.")
     oldDataRegDF = pd.read_csv(REGIONE_FILE)
     #print(oldDataRegDF)
-"""
+
 # ----------------------------------------------------- File Basilicata
 if os.path.exists(BASILICATA_FILE) == False:
     print("[INFO][csv Basilicata] Il file Basilicata non esiste. Lo creo")
@@ -410,6 +437,7 @@ reload_button = tk.Button(text="Reload", command=lambda:reload(currentView), fon
 reload_button.grid(row=2, column=2, rowspan=2, sticky="NSEW")
 
 reload(currentView) # Carico i dati alla prima esecuzione
+incrementRegionCounter() # Avvio il thread per contare le regioni
 
 if __name__ == "__main__":
     win.mainloop() #mostro la finestra
