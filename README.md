@@ -14,5 +14,5 @@ The GUI and all of the functions are the same as before. In this version I added
 I also added a backup function for the .csv files. You can disable it by changing to false the flags:
 - 'backup_mode_nazione'
 - 'backup_mode_regione'
-'- backup_mode_basilicata'
+- 'backup_mode_basilicata'
 
