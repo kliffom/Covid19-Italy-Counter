@@ -6,7 +6,13 @@ To use this script you will need Python3 and the module Pandas. To get pandas si
 Download the files in the repository and put 'covid-gui.py' and the 'img' folder in the same directory.
 
 # Run
-Using a terminal window, move into the directory where 'covid-gui.py' is located. In Linux is "cd /path/to/file". Then run the script using "python3 covid-gui.py". Don't run it outside of the folder, like with "python3 path/covid-gui.py" or it will not work.
+Using a terminal window, move into the directory where 'covid-gui.py' is located. In Linux is "cd /path/to/file". Then run the script using "python3 covid-gui.py". Don't run it outside of the folder, like with "python3 path/covid-gui.py" or it will not work. If you want to run the improved version, use "python3 covid-gui-2-0.py"
 
-# Beta
-The "covid-gui-2.py" application is a beta version. I'm adding some feature, other are missing for now so it's in a separate file.
+# Improved re-coded version
+The "covid-gui-2-0.py" application is an improved re-coded version of the original one. I didn't like how I coded the first one, and I had problems adding some features, so I decided to re-code it in order to add those features.
+The GUI and all of the functions are the same as before. In this version I added a local download of the data in 3 .csv files (one for Italy, one for all of the regions, and one for the Basilicata) in order to get the difference in every data between today and yesterday. The first time you will start the application, in every data it will show "(+0)" instead of the actual number, because "yesterday" data are missing. The day after it will show the right number. Unfortunately you have to run the application everyday, at around 19:00 CEST, so it can download the latest data.
+I also added a backup function for the .csv files. You can disable it by changing to false the flags:
+- 'backup_mode_nazione'
+- 'backup_mode_regione'
+'- backup_mode_basilicata'
+
